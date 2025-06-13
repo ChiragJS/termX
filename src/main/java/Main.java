@@ -13,6 +13,7 @@ public class Main {
                 case "exit" -> System.exit(0);
                 case "echo" -> System.out.println(input.split(" ", 2)[1]);
                 case "type" -> type( input );
+                case "pwd" -> System.out.println(System.getProperty("user.dir"));
                 default -> commandExec(input);
             }
             System.out.print("$ ");
