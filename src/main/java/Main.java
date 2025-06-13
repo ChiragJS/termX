@@ -14,13 +14,14 @@ public class Main {
                 case "echo" -> System.out.println(input.split(" ", 2)[1]);
                 case "type" -> type( input );
                 case "pwd" -> System.out.println(System.getProperty("user.dir"));
+                case "cd" -> System.setProperty("user.dir",input.split(" ",2)[1]);
                 default -> commandExec(input);
             }
             System.out.print("$ ");
         }
     }
     static void type ( String input ){
-        String validCommands[] = { "exit" , "echo" , "type" , "pwd" };
+        String validCommands[] = { "exit" , "echo" , "type" , "pwd", "cd" };
         String command = input.split(" ",2)[1] ;
         String[] PATH = System.getenv("PATH").split(":");
         boolean isPresent = false ;
