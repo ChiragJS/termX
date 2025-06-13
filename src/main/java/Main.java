@@ -20,7 +20,7 @@ public class Main {
         }
     }
     static void type ( String input ){
-        String validCommands[] = { "exit" , "echo" , "type" };
+        String validCommands[] = { "exit" , "echo" , "type" , "pwd" };
         String command = input.split(" ",2)[1] ;
         String[] PATH = System.getenv("PATH").split(":");
         boolean isPresent = false ;
