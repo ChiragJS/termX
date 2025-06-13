@@ -1,4 +1,4 @@
-import java.io.File;
+import java.io.*;
 import java.util.Scanner;
 
 public class Main {
@@ -13,7 +13,7 @@ public class Main {
                 case "exit" -> System.exit(0);
                 case "echo" -> System.out.println(input.split(" ", 2)[1]);
                 case "type" -> type( input );
-                default -> System.err.printf("%s: command not found\n", input);
+                default -> commandExec(input);
             }
             System.out.print("$ ");
         }
@@ -32,7 +32,6 @@ public class Main {
 
         for ( String path : PATH ){
             File[] directory = new File(path).listFiles();
-            // now check if the command exists in this directory
             if ( directory != null ) {
                 for (File file : directory) {
                     if (file.getName().equals(command)) {
@@ -44,5 +43,21 @@ public class Main {
             }
         }
         System.out.printf("%s: not found\n",command);
+    }
+    static void commandExec( String input ){
+        String args[] = input.split(" ");
+        try {
+            ProcessBuilder builder = new ProcessBuilder(args);
+            Process process = builder.start();
+            InputStream inputStream = process.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        }
+        catch (Exception e ) {
+            System.err.printf("%s: command not found\n", input);
+        }
     }
 }
