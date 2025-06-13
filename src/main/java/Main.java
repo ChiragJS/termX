@@ -14,7 +14,7 @@ public class Main {
                 case "echo" -> System.out.println(input.split(" ", 2)[1]);
                 case "type" -> type( input );
                 case "pwd" -> System.out.println(System.getProperty("user.dir"));
-                case "cd" -> System.setProperty("user.dir",input.split(" ",2)[1]);
+                case "cd" -> changeDirectory(input.split(" ",2)[1]);
                 default -> commandExec(input);
             }
             System.out.print("$ ");
@@ -59,7 +59,18 @@ public class Main {
             }
         }
         catch (Exception e ) {
-            System.err.printf("%s: command not found\n", input);
+            System.out.printf("%s: command not found\n", input);
         }
+    }
+
+    static void changeDirectory ( String path ){
+        // path is absolute for now
+            File directory = new File(path);
+            if ( directory.exists() && directory.isDirectory() ) {
+                System.setProperty("user.dir", path);
+            }
+            else {
+                System.out.printf("cd: %s: No such file or directory\n" , path);
+            }
     }
 }
