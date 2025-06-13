@@ -37,7 +37,7 @@ public class Main {
                 for (File file : directory) {
                     if (file.getName().equals(command)) {
                         isPresent = true;
-                        System.out.printf("%s: is %s\n", command, file.getAbsolutePath());
+                        System.out.printf("%s is %s\n", command, file.getAbsolutePath());
                         return;
                     }
                 }
