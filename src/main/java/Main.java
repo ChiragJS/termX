@@ -111,14 +111,17 @@ public class Main {
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
             if (escapeNext) {
-                if (inDoubleQuotes && (c == '"' || c == '\\' || c == '$' || c == '`')) {
+                if (c == ' ') {
+                    current.append(' ');
+                } else if (inDoubleQuotes && (c == '"' || c == '\\' || c == '$' || c == '`')) {
                     current.append(c);
                 } else {
-                    current.append('\\').append(c); // preserve backslash for all others
+                    current.append('\\').append(c);
                 }
                 escapeNext = false;
                 continue;
             }
+
             if (c == '\\') {
                 escapeNext = true;
                 continue;
