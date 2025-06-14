@@ -109,35 +109,33 @@ public class Main {
                 escaping = false;
                 continue;
             }
-
             if (c == '\\') {
                 if (inSingleQuote) {
-                    current.append(c); // \ has no special meaning in single quotes
+                    current.append(c);
                 } else if (inDoubleQuote) {
-                    // Only escape certain characters inside double quotes
                     if (i + 1 < input.length()) {
                         char next = input.charAt(i + 1);
                         if (next == '\\' || next == '"' || next == '$' || next == '\n') {
                             i++;
                             current.append(input.charAt(i));
                         } else {
-                            current.append(c); // keep backslash as-is
+                            current.append(c);
                         }
                     } else {
                         current.append(c);
                     }
                 } else {
-                    escaping = true; // escape next character outside quotes
+                    escaping = true;
                 }
             } else if (c == '\'') {
                 if (inDoubleQuote) {
-                    current.append(c); // single quote is literal inside double quotes
+                    current.append(c);
                 } else {
                     inSingleQuote = !inSingleQuote;
                 }
             } else if (c == '"') {
                 if (inSingleQuote) {
-                    current.append(c); // double quote is literal inside single quotes
+                    current.append(c);
                 } else {
                     inDoubleQuote = !inDoubleQuote;
                 }
@@ -145,7 +143,7 @@ public class Main {
                 if (inSingleQuote || inDoubleQuote) {
                     current.append(c);
                 } else {
-                    if (current.length() > 0) {
+                    if (!current.isEmpty()) {
                         tokens.add(current.toString());
                         current.setLength(0);
                     }
@@ -154,11 +152,9 @@ public class Main {
                 current.append(c);
             }
         }
-
-        if (current.length() > 0) {
+        if (!current.isEmpty()) {
             tokens.add(current.toString());
         }
-
         return tokens;
     }
 
