@@ -14,14 +14,9 @@ public class Main {
         while ( scanner.hasNextLine() ) {
             String input = scanner.nextLine();
             String argsCleaned = Arrays.stream(input.split(" "))
-                    .map(s -> {
-                        if (s.startsWith("'") && s.endsWith("'") && s.length() >= 2) {
-                            return s.substring(1, s.length() - 1);
-                        } else {
-                            return s;
-                        }
-                    })
+                    .map(s -> s.replaceAll("^'|'$", ""))
                     .collect(Collectors.joining(" "));
+
             String command = argsCleaned.split(" ")[0];
             switch (command) {
                 case "exit" -> System.exit(0);
