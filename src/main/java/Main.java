@@ -2,7 +2,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -13,9 +15,8 @@ public class Main {
 
         while ( scanner.hasNextLine() ) {
             String input = scanner.nextLine();
-            String argsCleaned = Arrays.stream(input.trim().split("\\s+"))
-                    .map(s -> s.replaceAll("^'|'$", ""))
-                    .collect(Collectors.joining(" "));
+            List<String> tokens = tokenize(input) ;
+            String argsCleaned = String.join(" ",tokens);
 
             String command = argsCleaned.split(" ")[0];
             switch (command) {
@@ -101,4 +102,31 @@ public class Main {
     static Path getPath ( String path ){
         return Paths.get(path);
     }
+
+    public static List<String> tokenize(String input) {
+        List<String> tokens = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        boolean inQuotes = false;
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (c == '\'') {
+                inQuotes = !inQuotes;
+                continue;
+            }
+            if (!inQuotes && Character.isWhitespace(c)) {
+                if (!current.isEmpty()) {
+                    tokens.add(current.toString());
+                    current.setLength(0);
+                }
+            } else {
+                current.append(c);
+            }
+        }
+        if (!current.isEmpty()) {
+            tokens.add(current.toString());
+        }
+        return tokens;
+    }
+
+
 }
