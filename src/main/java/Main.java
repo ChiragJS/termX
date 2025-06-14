@@ -105,14 +105,27 @@ public class Main {
     public static List<String> tokenize(String input) {
         List<String> tokens = new ArrayList<>();
         StringBuilder current = new StringBuilder();
-        boolean inQuotes = false;
+        boolean inSingleQuotes = false;
+        boolean inDoubleQuotes = false;
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
-            if (c == '\'') {
-                inQuotes = !inQuotes;
+            if (c == '\'' && !inDoubleQuotes) {
+                inSingleQuotes = !inSingleQuotes;
                 continue;
             }
-            if (Character.isWhitespace(c) && !inQuotes) {
+            if (c == '"' && !inSingleQuotes) {
+                inDoubleQuotes = !inDoubleQuotes;
+                continue;
+            }
+            if (c == '\\' && inDoubleQuotes && i + 1 < input.length()) {
+                char next = input.charAt(i + 1);
+                if (next == '"' || next == '\\' || next == '$' || next == '`') {
+                    current.append(next);
+                    i++;
+                    continue;
+                }
+            }
+            if (Character.isWhitespace(c) && !inSingleQuotes && !inDoubleQuotes) {
                 if (!current.isEmpty()) {
                     tokens.add(current.toString());
                     current.setLength(0);
@@ -126,5 +139,4 @@ public class Main {
         }
         return tokens;
     }
-
 }
