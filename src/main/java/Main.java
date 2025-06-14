@@ -25,7 +25,7 @@ public class Main {
                 case "type" -> type( argsCleaned );
                 case "pwd" -> System.out.println(getPath(System.getProperty("user.dir")).toAbsolutePath().normalize());
                 case "cd" -> changeDirectory(argsCleaned.split(" ",2)[1]);
-                default -> commandExec(argsCleaned);
+                default -> commandExec(tokens,input);
             }
             System.out.print("$ ");
         }
@@ -56,8 +56,7 @@ public class Main {
         }
         System.out.printf("%s: not found\n",command);
     }
-    static void commandExec( String input ){
-        String args[] = input.split(" ");
+    static void commandExec( List<String> args , String input ){
         try {
             ProcessBuilder builder = new ProcessBuilder(args);
             Process process = builder.start();
@@ -107,14 +106,17 @@ public class Main {
         List<String> tokens = new ArrayList<>();
         StringBuilder current = new StringBuilder();
         boolean inQuotes = false;
+
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
+
             if (c == '\'') {
-                inQuotes = !inQuotes;
-                continue;
+                inQuotes = !inQuotes; // toggle quote state
+                continue; // skip quote itself
             }
-            if (!inQuotes && Character.isWhitespace(c)) {
-                if (!current.isEmpty()) {
+
+            if (Character.isWhitespace(c) && !inQuotes) {
+                if (current.length() > 0) {
                     tokens.add(current.toString());
                     current.setLength(0);
                 }
@@ -122,11 +124,14 @@ public class Main {
                 current.append(c);
             }
         }
-        if (!current.isEmpty()) {
+
+        if (current.length() > 0) {
             tokens.add(current.toString());
         }
+
         return tokens;
     }
+
 
 
 }
