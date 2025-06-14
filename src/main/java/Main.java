@@ -68,14 +68,27 @@ public class Main {
 
     static void changeDirectory ( String path ){
 
-        Path workingDir = getPath(System.getProperty("user.dir"));
-        Path normalizedPath = getPath(path);
-        Path resolvedPath = workingDir.resolve(normalizedPath);
-        if (Files.exists(resolvedPath) && Files.isDirectory(resolvedPath)){
-            System.setProperty("user.dir", resolvedPath.toString());
+        if ( path.charAt(0) == '~' ){
+            String part1 = System.getenv("HOME");
+            String part2 = path.substring(1).trim();
+            Path path1 = getPath(part1);
+            Path path2 = getPath(part2);
+            Path resolvedPath = path1.resolve(path2);
+            if (Files.exists(resolvedPath) && Files.isDirectory(resolvedPath)) {
+                System.setProperty("user.dir", resolvedPath.toString());
+            } else {
+                System.out.printf("cd: %s: No such file or directory\n", path);
+            }
         }
         else {
-            System.out.printf("cd: %s: No such file or directory\n" , path);
+            Path workingDir = getPath(System.getProperty("user.dir"));
+            Path normalizedPath = getPath(path);
+            Path resolvedPath = workingDir.resolve(normalizedPath);
+            if (Files.exists(resolvedPath) && Files.isDirectory(resolvedPath)) {
+                System.setProperty("user.dir", resolvedPath.toString());
+            } else {
+                System.out.printf("cd: %s: No such file or directory\n", path);
+            }
         }
     }
 
