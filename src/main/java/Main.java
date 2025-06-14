@@ -97,50 +97,69 @@ public class Main {
     public static List<String> tokenize(String input) {
         List<String> tokens = new ArrayList<>();
         StringBuilder current = new StringBuilder();
-        boolean inSingleQuotes = false;
-        boolean inDoubleQuotes = false;
-        boolean escapeNext = false;
+        boolean inSingleQuote = false;
+        boolean inDoubleQuote = false;
+        boolean escaping = false;
 
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
 
-            if (escapeNext) {
-                current.append(c); // always append the next char literally
-                escapeNext = false;
+            if (escaping) {
+                current.append(c);
+                escaping = false;
                 continue;
             }
 
             if (c == '\\') {
-                escapeNext = true;
-                continue;
-            }
-
-            if (c == '\'' && !inDoubleQuotes) {
-                inSingleQuotes = !inSingleQuotes;
-                continue;
-            }
-
-            if (c == '"' && !inSingleQuotes) {
-                inDoubleQuotes = !inDoubleQuotes;
-                continue;
-            }
-
-            if (Character.isWhitespace(c) && !inSingleQuotes && !inDoubleQuotes) {
-                if (!current.isEmpty()) {
-                    tokens.add(current.toString());
-                    current.setLength(0);
+                if (inSingleQuote) {
+                    current.append(c); // \ has no special meaning in single quotes
+                } else if (inDoubleQuote) {
+                    // Only escape certain characters inside double quotes
+                    if (i + 1 < input.length()) {
+                        char next = input.charAt(i + 1);
+                        if (next == '\\' || next == '"' || next == '$' || next == '\n') {
+                            i++;
+                            current.append(input.charAt(i));
+                        } else {
+                            current.append(c); // keep backslash as-is
+                        }
+                    } else {
+                        current.append(c);
+                    }
+                } else {
+                    escaping = true; // escape next character outside quotes
+                }
+            } else if (c == '\'') {
+                if (inDoubleQuote) {
+                    current.append(c); // single quote is literal inside double quotes
+                } else {
+                    inSingleQuote = !inSingleQuote;
+                }
+            } else if (c == '"') {
+                if (inSingleQuote) {
+                    current.append(c); // double quote is literal inside single quotes
+                } else {
+                    inDoubleQuote = !inDoubleQuote;
+                }
+            } else if (Character.isWhitespace(c)) {
+                if (inSingleQuote || inDoubleQuote) {
+                    current.append(c);
+                } else {
+                    if (current.length() > 0) {
+                        tokens.add(current.toString());
+                        current.setLength(0);
+                    }
                 }
             } else {
                 current.append(c);
             }
         }
 
-        if (!current.isEmpty()) {
+        if (current.length() > 0) {
             tokens.add(current.toString());
         }
 
         return tokens;
     }
-
 
 }
