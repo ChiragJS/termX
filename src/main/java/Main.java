@@ -6,74 +6,68 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         System.out.print("$ ");
         Scanner scanner = new Scanner(System.in);
-        while ( scanner.hasNextLine() ) {
+        while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
-            List<String> tokens = tokenize(input) ;
-            String argsCleaned = String.join(" ",tokens);
-
+            List<String> tokens = tokenize(input);
+            String argsCleaned = String.join(" ", tokens);
             String command = argsCleaned.split(" ")[0];
             switch (command) {
                 case "exit" -> System.exit(0);
                 case "echo" -> System.out.println(argsCleaned.split(" ", 2)[1]);
-                case "type" -> type( argsCleaned );
+                case "type" -> type(argsCleaned);
                 case "pwd" -> System.out.println(getPath(System.getProperty("user.dir")).toAbsolutePath().normalize());
-                case "cd" -> changeDirectory(argsCleaned.split(" ",2)[1]);
-                default -> commandExec(tokens,input);
+                case "cd" -> changeDirectory(argsCleaned.split(" ", 2)[1]);
+                default -> commandExec(tokens, input);
             }
             System.out.print("$ ");
         }
     }
-    static void type ( String input ){
-        String validCommands[] = { "exit" , "echo" , "type" , "pwd", "cd" };
-        String command = input.split(" ",2)[1] ;
+
+    static void type(String input) {
+        String[] validCommands = {"exit", "echo", "type", "pwd", "cd"};
+        String command = input.split(" ", 2)[1];
         String[] PATH = System.getenv("PATH").split(":");
-        boolean isPresent = false ;
-        for ( String validCommand :  validCommands ){
-            if ( validCommand.equals(command) ){
-                System.out.printf("%s is a shell builtin\n",command);
-                return ;
+        for (String validCommand : validCommands) {
+            if (validCommand.equals(command)) {
+                System.out.printf("%s is a shell builtin\n", command);
+                return;
             }
         }
-
-        for ( String path : PATH ){
+        for (String path : PATH) {
             File[] directory = new File(path).listFiles();
-            if ( directory != null ) {
+            if (directory != null) {
                 for (File file : directory) {
                     if (file.getName().equals(command)) {
-                        isPresent = true;
                         System.out.printf("%s is %s\n", command, file.getAbsolutePath());
                         return;
                     }
                 }
             }
         }
-        System.out.printf("%s: not found\n",command);
+        System.out.printf("%s: not found\n", command);
     }
-    static void commandExec( List<String> args , String input ){
+
+    static void commandExec(List<String> args, String input) {
         try {
             ProcessBuilder builder = new ProcessBuilder(args);
             Process process = builder.start();
-            InputStream inputStream = process.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
             }
-        }
-        catch (Exception e ) {
+        } catch (Exception e) {
             System.out.printf("%s: command not found\n", input);
         }
     }
 
-    static void changeDirectory ( String path ){
-
-        if ( path.charAt(0) == '~' ){
+    static void changeDirectory(String path) {
+        if (path.charAt(0) == '~') {
             String part1 = System.getenv("HOME");
             String part2 = path.substring(1).trim();
             Path path1 = getPath(part1);
@@ -84,8 +78,7 @@ public class Main {
             } else {
                 System.out.printf("cd: %s: No such file or directory\n", path);
             }
-        }
-        else {
+        } else {
             Path workingDir = getPath(System.getProperty("user.dir"));
             Path normalizedPath = getPath(path);
             Path resolvedPath = workingDir.resolve(normalizedPath);
@@ -97,7 +90,7 @@ public class Main {
         }
     }
 
-    static Path getPath ( String path ){
+    static Path getPath(String path) {
         return Paths.get(path);
     }
 
@@ -111,17 +104,10 @@ public class Main {
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
             if (escapeNext) {
-                if (c == ' ') {
-                    current.append(' ');
-                } else if (inDoubleQuotes && (c == '"' || c == '\\' || c == '$' || c == '`')) {
-                    current.append(c);
-                } else {
-                    current.append('\\').append(c);
-                }
+                current.append(c);
                 escapeNext = false;
                 continue;
             }
-
             if (c == '\\') {
                 escapeNext = true;
                 continue;
