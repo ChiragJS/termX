@@ -1,4 +1,7 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Main {
@@ -13,7 +16,7 @@ public class Main {
                 case "exit" -> System.exit(0);
                 case "echo" -> System.out.println(input.split(" ", 2)[1]);
                 case "type" -> type( input );
-                case "pwd" -> System.out.println(System.getProperty("user.dir"));
+                case "pwd" -> System.out.println(getPath(System.getProperty("user.dir")).toAbsolutePath().normalize());
                 case "cd" -> changeDirectory(input.split(" ",2)[1]);
                 default -> commandExec(input);
             }
@@ -64,13 +67,19 @@ public class Main {
     }
 
     static void changeDirectory ( String path ){
-        // path is absolute for now
-            File directory = new File(path);
-            if ( directory.exists() && directory.isDirectory() ) {
-                System.setProperty("user.dir", path);
-            }
-            else {
-                System.out.printf("cd: %s: No such file or directory\n" , path);
-            }
+
+        Path workingDir = getPath(System.getProperty("user.dir"));
+        Path normalizedPath = getPath(path);
+        Path resolvedPath = workingDir.resolve(normalizedPath);
+        if (Files.exists(resolvedPath) && Files.isDirectory(resolvedPath)){
+            System.setProperty("user.dir", resolvedPath.toString());
+        }
+        else {
+            System.out.printf("cd: %s: No such file or directory\n" , path);
+        }
+    }
+
+    static Path getPath ( String path ){
+        return Paths.get(path);
     }
 }
