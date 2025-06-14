@@ -107,8 +107,19 @@ public class Main {
         StringBuilder current = new StringBuilder();
         boolean inSingleQuotes = false;
         boolean inDoubleQuotes = false;
+        boolean escapeNext = false;
+
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
+            if (escapeNext) {
+                current.append(c);
+                escapeNext = false;
+                continue;
+            }
+            if (c == '\\') {
+                escapeNext = true;
+                continue;
+            }
             if (c == '\'' && !inDoubleQuotes) {
                 inSingleQuotes = !inSingleQuotes;
                 continue;
@@ -116,14 +127,6 @@ public class Main {
             if (c == '"' && !inSingleQuotes) {
                 inDoubleQuotes = !inDoubleQuotes;
                 continue;
-            }
-            if (c == '\\' && inDoubleQuotes && i + 1 < input.length()) {
-                char next = input.charAt(i + 1);
-                if (next == '"' || next == '\\' || next == '$' || next == '`') {
-                    current.append(next);
-                    i++;
-                    continue;
-                }
             }
             if (Character.isWhitespace(c) && !inSingleQuotes && !inDoubleQuotes) {
                 if (!current.isEmpty()) {
