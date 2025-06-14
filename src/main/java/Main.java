@@ -103,23 +103,41 @@ public class Main {
 
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
+
             if (escapeNext) {
-                current.append(c);
+                switch (c) {
+                    case 'n' -> current.append('\n');
+                    case 't' -> current.append('\t');
+                    case '\\' -> current.append('\\');
+                    case '"' -> current.append('"');
+                    case '\'' -> current.append('\'');
+                    case ' ' -> current.append(' ');
+                    default -> current.append(c);
+                }
                 escapeNext = false;
                 continue;
             }
+
             if (c == '\\') {
-                escapeNext = true;
-                continue;
+                if (!inSingleQuotes) {
+                    escapeNext = true;
+                    continue;
+                } else {
+                    current.append('\\');
+                    continue;
+                }
             }
+
             if (c == '\'' && !inDoubleQuotes) {
                 inSingleQuotes = !inSingleQuotes;
                 continue;
             }
+
             if (c == '"' && !inSingleQuotes) {
                 inDoubleQuotes = !inDoubleQuotes;
                 continue;
             }
+
             if (Character.isWhitespace(c) && !inSingleQuotes && !inDoubleQuotes) {
                 if (!current.isEmpty()) {
                     tokens.add(current.toString());
@@ -129,9 +147,12 @@ public class Main {
                 current.append(c);
             }
         }
+
         if (!current.isEmpty()) {
             tokens.add(current.toString());
         }
+
         return tokens;
     }
+
 }
