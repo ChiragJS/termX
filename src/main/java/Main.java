@@ -105,7 +105,7 @@ public class Main {
             char c = input.charAt(i);
 
             if (escapeNext) {
-                current.append(c); // keep literal char after \
+                current.append(c); // always append the next char literally
                 escapeNext = false;
                 continue;
             }
