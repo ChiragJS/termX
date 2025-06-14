@@ -2,7 +2,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -11,14 +13,23 @@ public class Main {
 
         while ( scanner.hasNextLine() ) {
             String input = scanner.nextLine();
-            String command = input.split(" ")[0];
+            String argsCleaned = Arrays.stream(input.split(" "))
+                    .map(s -> {
+                        if (s.startsWith("'") && s.endsWith("'") && s.length() >= 2) {
+                            return s.substring(1, s.length() - 1);
+                        } else {
+                            return s;
+                        }
+                    })
+                    .collect(Collectors.joining(" "));
+            String command = argsCleaned.split(" ")[0];
             switch (command) {
                 case "exit" -> System.exit(0);
-                case "echo" -> System.out.println(input.split(" ", 2)[1]);
-                case "type" -> type( input );
+                case "echo" -> System.out.println(argsCleaned.split(" ", 2)[1]);
+                case "type" -> type( argsCleaned );
                 case "pwd" -> System.out.println(getPath(System.getProperty("user.dir")).toAbsolutePath().normalize());
-                case "cd" -> changeDirectory(input.split(" ",2)[1]);
-                default -> commandExec(input);
+                case "cd" -> changeDirectory(argsCleaned.split(" ",2)[1]);
+                default -> commandExec(argsCleaned);
             }
             System.out.print("$ ");
         }
