@@ -105,27 +105,14 @@ public class Main {
             char c = input.charAt(i);
 
             if (escapeNext) {
-                switch (c) {
-                    case 'n' -> current.append('\n');
-                    case 't' -> current.append('\t');
-                    case '\\' -> current.append('\\');
-                    case '"' -> current.append('"');
-                    case '\'' -> current.append('\'');
-                    case ' ' -> current.append(' ');
-                    default -> current.append(c);
-                }
+                current.append(c); // keep literal char after \
                 escapeNext = false;
                 continue;
             }
 
             if (c == '\\') {
-                if (!inSingleQuotes) {
-                    escapeNext = true;
-                    continue;
-                } else {
-                    current.append('\\');
-                    continue;
-                }
+                escapeNext = true;
+                continue;
             }
 
             if (c == '\'' && !inDoubleQuotes) {
@@ -154,5 +141,6 @@ public class Main {
 
         return tokens;
     }
+
 
 }
