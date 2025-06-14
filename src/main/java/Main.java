@@ -12,7 +12,6 @@ public class Main {
     public static void main(String[] args) throws Exception {
         System.out.print("$ ");
         Scanner scanner = new Scanner(System.in);
-
         while ( scanner.hasNextLine() ) {
             String input = scanner.nextLine();
             List<String> tokens = tokenize(input) ;
@@ -112,7 +111,11 @@ public class Main {
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
             if (escapeNext) {
-                current.append(c);
+                if (inDoubleQuotes && (c == '"' || c == '\\' || c == '$' || c == '`')) {
+                    current.append(c);
+                } else {
+                    current.append('\\').append(c); // preserve backslash for all others
+                }
                 escapeNext = false;
                 continue;
             }
