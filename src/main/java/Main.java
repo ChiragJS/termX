@@ -13,7 +13,7 @@ public class Main {
 
         while ( scanner.hasNextLine() ) {
             String input = scanner.nextLine();
-            String argsCleaned = Arrays.stream(input.split(" "))
+            String argsCleaned = Arrays.stream(input.trim().split("\\s+"))
                     .map(s -> s.replaceAll("^'|'$", ""))
                     .collect(Collectors.joining(" "));
 
