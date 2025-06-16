@@ -57,15 +57,23 @@ public class Main {
         try {
             ProcessBuilder builder = new ProcessBuilder(args);
             Process process = builder.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader stdoutReader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = stdoutReader.readLine()) != null) {
                 System.out.println(line);
             }
+            BufferedReader stderrReader = new BufferedReader(
+                    new InputStreamReader(process.getErrorStream()));
+            while ((line = stderrReader.readLine()) != null) {
+                System.err.println(line);
+            }
+            process.waitFor();
         } catch (Exception e) {
-            System.out.printf("%s: command not found\n", input);
+            System.err.printf("%s: command not found\n", input);
         }
     }
+
 
     static void changeDirectory(String path) {
         if (path.charAt(0) == '~') {
