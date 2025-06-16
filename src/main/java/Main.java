@@ -3,7 +3,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -11,8 +10,9 @@ public class Main {
     public static void main(String[] args) throws Exception {
         System.out.print("$ ");
         Scanner scanner = new Scanner(System.in);
+        final PrintStream stdout = System.out ;
         while (scanner.hasNextLine()) {
-            String input = scanner.nextLine();
+            String input = handleRedirection(scanner.nextLine(),stdout);
             List<String> tokens = tokenize(input);
             String argsCleaned = String.join(" ", tokens);
             String command = argsCleaned.split(" ")[0];
@@ -24,6 +24,7 @@ public class Main {
                 case "cd" -> changeDirectory(argsCleaned.split(" ", 2)[1]);
                 default -> commandExec(tokens, input);
             }
+            System.setOut(stdout);
             System.out.print("$ ");
         }
     }
@@ -156,6 +157,26 @@ public class Main {
             tokens.add(current.toString());
         }
         return tokens;
+    }
+    public static String handleRedirection(String input, PrintStream stdout) throws IOException {
+        if (input.contains(" 1> ") || input.contains(" > ")) {
+            String[] parts = input.split("( 1> )|( > )");
+            String commandPart = parts[0].trim();
+            String outputPathStr = parts[1].trim();
+            Path logPath = Paths.get(outputPathStr);
+            Path parentDir = logPath.getParent();
+            if (parentDir != null && !Files.exists(parentDir)) {
+                Files.createDirectories(parentDir);
+            }
+            if (Files.exists(logPath)) {
+                Files.delete(logPath);
+            }
+            Files.createFile(logPath);
+            System.setOut(new PrintStream(Files.newOutputStream(logPath)));
+            return commandPart;
+        } else {
+            return input;
+        }
     }
 
 }
