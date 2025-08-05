@@ -1,35 +1,45 @@
-[![progress-banner](https://backend.codecrafters.io/progress/shell/524db3f1-692f-4f69-8a11-92afffdef506)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+# Java Shell Project
 
-This is a starting point for Java solutions to the
-["Build Your Own Shell" Challenge](https://app.codecrafters.io/courses/shell/overview).
+This project aims to build a custom, POSIX-compliant shell in Java. The goal is to create a fully functional command-line interpreter that supports core shell features like command execution, I/O redirection, and environment variable management, all built upon a clean, object-oriented architecture.
 
-In this challenge, you'll build your own POSIX compliant shell that's capable of
-interpreting shell commands, running external programs and builtin commands like
-cd, pwd, echo and more. Along the way, you'll learn about shell command parsing,
-REPLs, builtin commands, and more.
+## Setup and Usage
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+### Prerequisites
 
-# Passing the first stage
+*   [Java Development Kit (JDK)](https://www.oracle.com/java/technologies/downloads/) (Version 23 or higher)
+*   [Apache Maven](https://maven.apache.org/download.cgi)
 
-The entry point for your `shell` implementation is in `src/main/java/Main.java`.
-Study and uncomment the relevant code, and push your changes to pass the first
-stage:
+### Running the Shell
 
-```sh
-git commit -am "pass 1st stage" # any msg
-git push origin master
-```
+1.  **Clone the repository:**
+    ```sh
+    git clone <repository-url>
+    cd <repository-directory>
+    ```
 
-Time to move on to the next stage!
+2.  **Compile and Package:**
+    Use Maven to build the project. This will create a self-contained executable JAR in the `target` directory.
+    ```sh
+    mvn clean package
+    ```
 
-# Stage 2 & beyond
+3.  **Run the Shell:**
+    Execute the JAR file to start an interactive session.
+    ```sh
+    java -jar target/codecrafters-shell.jar
+    ```
+    Alternatively, you can use the provided wrapper script:
+    ```sh
+    ./your_program.sh
+    ```
 
-Note: This section is for stages 2 and beyond.
+## Features to Implement
 
-1. Ensure you have `mvn` installed locally
-1. Run `./your_program.sh` to run your program, which is implemented in
-   `src/main/java/Main.java`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
+The following features are planned for implementation:
+
+*   **Environment Variable Handling:**
+    *   An `export` command to set session-specific environment variables.
+    *   Expansion of variables (e.g., `$VAR`) in command arguments.
+*   **Globbing (`*`, `?`):** Expansion of wildcard patterns into a list of matching file names.
+*   **Logical Operators (`&&`, `||`):** Conditional execution of commands.
+*   **Background Execution (`&`):** Ability to run commands in the background.
